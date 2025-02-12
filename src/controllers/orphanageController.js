@@ -1,9 +1,10 @@
 const { response, request } = require("express");
 const Orphanage = require("../models/orphanageModel");
+const mongoose = require("mongoose");
 
 exports.getOrphanages = async (request, response) => {
     try {
-        let orphanages = await Orphanage.find({ isActive: true });
+        let orphanages = await Orphanage.find({ isActive: true }, "name totalExpense createdBy");
         console.log(orphanages);
         // response.send(`Retrieved all orphanage:${orphanages}`);
 
@@ -35,6 +36,13 @@ exports.getOrphanageById = async (request, response) => {
         // }
 
         // ------ OR this method, but findById() won't work cause it is a "projection" not a filter, doesn't take a second parameter.
+        let validId = mongoose.isValidObjectId(id);
+        if (!validId){
+            response.json({
+                status: "failed",
+                message: "Invalid ID"
+            });
+        }
         const orphanage = await Orphanage.findById(id);
 
         if (!orphanage || !orphanage.isActive) {
@@ -91,6 +99,25 @@ exports.getOrphanageByName = async (request, response) => {
     }
 };
 
+exports.getOphanageByUser = async(request, response) => {
+   try {
+
+    const orphanagesByUser = await Orphanage.find({isActive: true}).populate("createdBy");
+    
+    response.status(200).json({
+        status: "success",
+        message: "Orphanage retrived successfully",
+        orphanagesByUser
+    });
+   } catch (error) {
+    response.json({
+        status: "failed",
+        message: error.message,
+        orphanagesByUser
+    });
+   }
+}
+
 exports.createOrphanage = async (request, response) => {
     try {
         const data = request.body;
@@ -119,6 +146,7 @@ exports.createOrphanage = async (request, response) => {
                 state: data.location.state,
                 country: data.location.country,
             },
+            createdBy: data.createdBy
         });
         await orphanage.save();
 

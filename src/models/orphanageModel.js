@@ -26,16 +26,20 @@ const orphanageSchema = new mongoose.Schema(
       state: { type: String, required: true },
       country: { type: String, required: true },
     },
-    creatorId: {
+    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       required: true,
       immutable: true
     },
-    expenses: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Expense"
-    }],
+    // updatedBy: [{
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "User",
+    // }],
+    // expenses: [{
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Expense"
+    // }],
     totalExpense: {
       type: Number,
       default: 0,
@@ -44,10 +48,10 @@ const orphanageSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    lastDonation:{
-      type: Date,
+    // lastDonation:{
+    //   type: Date,
 
-    },
+    // },
     isActive: {
         type: Boolean,
         default: true

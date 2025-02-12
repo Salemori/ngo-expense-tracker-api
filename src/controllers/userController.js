@@ -1,5 +1,6 @@
 const UserModel = require("../models/userModel.js");
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // Creating user using bcrypt to hash password.
 exports.signUp = async (request, response) => {
@@ -72,9 +73,12 @@ exports.signIn = async (request, response) => {
             });
         }
 
+        const token = jwt.sign({id: user._id, email: user.email}, "secretkey" );
         response.status(200).json({
             status: "success",
-            message: "User signed-in successfully"
+            message: "User signed-in successfully",
+            userData: user,
+            token
             // message: `User signed-in successfully ${user.firstName} ${user.lastName}`
         });
 
